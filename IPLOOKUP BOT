@@ -1,0 +1,37 @@
+import discord
+from discord.ext import commands
+import requests
+
+
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+
+@bot.slash_command(name='iplookup', description='Lookup an IP address using ipapi.co')
+async def ip_lookup(ctx, ip: str):
+    url = f'https://ipapi.co/{ip}/json/'
+    response = requests.get(url)
+    data = response.json()
+
+
+    if 'error' in data:
+        await ctx.respond(f"Error: {data['reason']}")
+        return
+
+   
+    embed = discord.Embed(title='IP Lookup Results', color=0x00ff00)
+    embed.add_field(name='IP Address', value=data.get('ip', 'N/A'), inline=False)
+    embed.add_field(name='City', value=data.get('city', 'N/A'), inline=False)
+    embed.add_field(name='Region', value=data.get('region', 'N/A'), inline=False)
+    embed.add_field(name='Country', value=data.get('country_name', 'N/A'), inline=False)
+    embed.add_field(name='Postal Code', value=data.get('postal', 'N/A'), inline=False)
+    embed.add_field(name='Latitude', value=data.get('latitude', 'N/A'), inline=False)
+    embed.add_field(name='Longitude', value=data.get('longitude', 'N/A'), inline=False)
+    embed.add_field(name='Time Zone', value=data.get('timezone', 'N/A'), inline=False)
+    embed.add_field(name='ASN', value=data.get('asn', 'N/A'), inline=False)
+    embed.add_field(name='Org', value=data.get('org', 'N/A'), inline=False)
+
+    await ctx.respond(embed=embed)
+
+
+bot.run('bot token') #put the bots token in here
